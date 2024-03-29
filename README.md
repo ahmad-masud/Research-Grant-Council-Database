@@ -5,18 +5,12 @@
 The primary objective of this database is to efficiently manage and store information related to grant competitions, submissions, reviewers, and the outcomes of these submissions for a research grant council. The database facilitates tracking grant proposals, review assignments, and the allocation of funds to researchers across various disciplines.
 
 ## Relations
-
-### - Researchers
-
-### - Grant Competitions (Calls for Proposals)
-
-### - Grant Proposals
-
-### - Reviewers
-
-### - Review
-
-### - Meetings
+- Researchers
+- Grant Competitions (Calls for Proposals)
+- Grant Proposals
+- Reviewers
+- Review
+- - Meetings
 
 ## Installation
 
@@ -54,8 +48,7 @@ This project requires Python 3.8 or later, Jupyter Notebook, and SQLite. Follow 
 Follow these steps to set up and run the project locally on your machine. Ensure that you have SQLite installed on your system, as it is used for the database component of this project. SQLite can be installed and configured following the instructions on the [SQLite official website](https://www.sqlite.org/).
 
 ## Acknowledgements
-### - Ahmad Masud
-
-### - Jaden Chan
+- Ahmad Masud
+- Jaden Chan
 
 
