@@ -52,12 +52,12 @@ This project requires Python 3.8 or later, Jupyter Notebook, and SQLite. Follow 
 
 3. **Clone the Repository:** Clone the project repository to your local machine using Git:
    ```
-   git clone <repository-url>
+   git clone https://github.com/ahmad-masud/Research-Grant-Council-Database.git
    ```
 
 4. **Navigate to the Project Directory:** Change into the project directory:
    ```
-   cd <project-directory>
+   cd Research-Grant-Council-Database
    ```
 
 5. **Install Required Libraries:** Install the required Python libraries specified in the `requirements.txt` file:
