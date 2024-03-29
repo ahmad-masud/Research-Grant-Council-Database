@@ -1,5 +1,5 @@
 # Research Grant Council Database Specifications
-![Entity Relationship Diagram](assets/erd.png)
+![Entity Relationship Diagram](resources/erd.png)
 
 ## Objective
 The primary objective of this database is to efficiently manage and store information related to grant competitions, submissions, reviewers, and the outcomes of these submissions for a research grant council. The database facilitates tracking grant proposals, review assignments, and the allocation of funds to researchers across various disciplines.
