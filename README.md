@@ -6,17 +6,17 @@ The primary objective of this database is to efficiently manage and store inform
 
 ## Relations
 
-### 1. Researchers
+### - Researchers
 
-### 2. Grant Competitions (Calls for Proposals)
+### - Grant Competitions (Calls for Proposals)
 
-### 3. Grant Proposals
+### - Grant Proposals
 
-### 4. Reviewers
+### - Reviewers
 
-### 5. Review
+### - Review
 
-### 6. Meetings
+### - Meetings
 
 ## Installation
 
