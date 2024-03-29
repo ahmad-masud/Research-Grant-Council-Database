@@ -10,7 +10,7 @@ The primary objective of this database is to efficiently manage and store inform
 - Grant Proposals
 - Reviewers
 - Review
-- - Meetings
+- Meetings
 
 ## Installation
 
