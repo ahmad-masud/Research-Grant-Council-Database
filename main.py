@@ -1,3 +1,5 @@
+"""Research Grant Council Database Main"""
+
 import sqlite3
 
 database = sqlite3.connect("Research-Grant-Council-Database.db")
@@ -19,13 +21,13 @@ while True:
 
     if option == "1":
         month = input("Enter the month (1-12): ").zfill(2)
-                
+        
         with database:
             cursor = database.cursor()
 
-            query = "SELECT competitionID, title FROM Competition WHERE strftime('%m', deadline) >= :month AND strftime('%m', startDate) < :month AND competitionID IN (SELECT competitionID FROM Proposal WHERE requestedAmount >= 20000 OR proposalID IN (SELECT proposalID FROM Collaborator GROUP BY proposalID HAVING COUNT(collaboratorID) >= 10));"
+            QUERY = "SELECT competitionID, title FROM Competition WHERE strftime('%m', deadline) >= :month AND strftime('%m', startDate) < :month AND competitionID IN (SELECT competitionID FROM Proposal WHERE requestedAmount >= 20000 OR proposalID IN (SELECT proposalID FROM Collaborator GROUP BY proposalID HAVING COUNT(collaboratorID) >= 10));"
 
-            cursor.execute(query, {"month":month})
+            cursor.execute(QUERY, {"month":month})
 
             rows = cursor.fetchall()
 
@@ -45,9 +47,9 @@ while True:
         with database:
             cursor = database.cursor()
 
-            query = "SELECT * FROM Proposal WHERE competitionID IN (SELECT competitionID FROM Competition WHERE area=:area) AND requestedAmount >= (SELECT MAX(requestedAmount) FROM Proposal WHERE competitionID IN (SELECT competitionID FROM Competition WHERE area=:area));"
+            QUERY = "SELECT * FROM Proposal WHERE competitionID IN (SELECT competitionID FROM Competition WHERE area=:area) AND requestedAmount >= (SELECT MAX(requestedAmount) FROM Proposal WHERE competitionID IN (SELECT competitionID FROM Competition WHERE area=:area));"
 
-            cursor.execute(query, {"area":area})
+            cursor.execute(QUERY, {"area":area})
 
             rows = cursor.fetchall()
 
@@ -67,9 +69,9 @@ while True:
         with database:
             cursor = database.cursor()
 
-            query = "SELECT * FROM Proposal WHERE submissionDate < :date AND status = 'awarded' AND awardedAmount >= (SELECT MAX(awardedAmount) FROM Proposal WHERE submissionDate < :date AND status = 'awarded');"
+            QUERY = "SELECT * FROM Proposal WHERE submissionDate < :date AND status = 'awarded' AND awardedAmount >= (SELECT MAX(awardedAmount) FROM Proposal WHERE submissionDate < :date AND status = 'awarded');"
 
-            cursor.execute(query, {"date":date})
+            cursor.execute(QUERY, {"date":date})
 
             rows = cursor.fetchall()
 
@@ -89,9 +91,9 @@ while True:
         with database:
             cursor = database.cursor()
 
-            query = "SELECT AVG(ABS(requestedAmount - awardedAmount)) FROM Proposal WHERE competitionID IN (SELECT competitionID FROM Competition WHERE area=:area);"
+            QUERY = "SELECT AVG(ABS(requestedAmount - awardedAmount)) FROM Proposal WHERE competitionID IN (SELECT competitionID FROM Competition WHERE area=:area);"
 
-            cursor.execute(query, {"area":area})
+            cursor.execute(QUERY, {"area":area})
 
             row = cursor.fetchone()
 
@@ -102,11 +104,53 @@ while True:
 
     elif option == "5":
         proposalID = input("Enter the proposal ID: ")
+        deadline = input("Enter the deadline for the new review (YYYY-MM-DD): ")
+        reviewID = ""
 
         with database:
             cursor = database.cursor()
 
-            query = ""
+            QUERY = "INSERT INTO Review (proposalID, deadline, status) VALUES (:proposalID, :deadline, 'not submitted');"
+
+            cursor.execute(QUERY, {"proposalID":proposalID, "deadline":deadline})
+
+            database.commit()
+
+            reviewID = cursor.lastrowid
+
+        with database:
+            cursor = database.cursor()
+
+            QUERY = "SELECT R.* FROM Reviewer R JOIN (SELECT reviewerID, COUNT(*) AS reviewCount FROM Assignment A JOIN Review RV ON A.reviewID = RV.reviewID WHERE RV.status = 'not submitted' GROUP BY reviewerID HAVING reviewCount < 3) AS Subquery ON R.reviewerID = Subquery.reviewerID WHERE R.reviewerID NOT IN (SELECT DISTINCT A.reviewerID FROM Assignment A JOIN Reviewer R ON A.reviewerID = R.reviewerID JOIN Review RV ON A.reviewID = RV.reviewID JOIN Proposal P ON RV.proposalID = P.proposalID JOIN Collaborator C ON P.proposalID = C.proposalID JOIN Conflict CF ON R.researcherID = CF.researcherID WHERE C.proposalID = :proposal)"
+
+            cursor.execute(QUERY, {"proposal":proposalID})
+
+            rows = cursor.fetchall()
+
+            if rows:
+                print("The reviewers who can review the specified proposal: ")
+            else:
+                print("No reviewers found.")
+            
+            for row in rows:
+                for column in row:
+                    print(column, end=", ")
+                print("\n")
+
+        print("Choose a reviewer from the list above to assign to the proposal.")
+
+        reviewerID = input("Enter the reviewer ID: ")
+
+        with database:
+            cursor = database.cursor()
+
+            QUERY = "INSERT INTO Assignment (reviewerID, reviewID) VALUES (:reviewerID, :reviewID);"
+
+            cursor.execute(QUERY, {"reviewerID":reviewerID, "reviewID":reviewID})
+
+            database.commit()
+
+            print("The reviewer has been assigned to the proposal.")
 
     elif option == "6":
         firstName = input("Enter the first name: ").capitalize()
@@ -115,9 +159,9 @@ while True:
         with database:
             cursor = database.cursor()
 
-            query = "SELECT * FROM Proposal WHERE proposalID IN (SELECT proposalID FROM Review WHERE reviewID IN (SELECT reviewID FROM Assignment WHERE reviewerID IN (SELECT reviewerID FROM Reviewer WHERE firstName=:firstName AND lastName=:lastName)));"
+            QUERY = "SELECT * FROM Proposal WHERE proposalID IN (SELECT proposalID FROM Review WHERE reviewID IN (SELECT reviewID FROM Assignment WHERE reviewerID IN (SELECT reviewerID FROM Reviewer WHERE firstName=:firstName AND lastName=:lastName)));"
 
-            cursor.execute(query, {"firstName":firstName, "lastName":lastName})
+            cursor.execute(QUERY, {"firstName":firstName, "lastName":lastName})
 
             rows = cursor.fetchall()
 
