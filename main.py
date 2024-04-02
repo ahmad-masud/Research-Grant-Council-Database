@@ -2,7 +2,7 @@
 
 import sqlite3
 
-database = sqlite3.connect("Research-Grant-Council-Database.db")
+database = sqlite3.connect("Council.db")
 
 print("Welcome to the Research Grant Council Database!\n")
 
